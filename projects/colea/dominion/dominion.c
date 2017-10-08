@@ -656,8 +656,8 @@ int adventurerCard(struct gameState *state)
 		nextPlayer = 0;
 	}
 
-	while (drawntreasure > 2) {	//BUG < changed to >
-		if (state->deckCount[currentPlayer] < 1) {//if the deck is empty we need to shuffle discard and add to deck
+	while (drawntreasure > 2) { //BUG < changed to >
+		if (state->deckCount[currentPlayer] <1) {//if the deck is empty we need to shuffle discard and add to deck
 			shuffle(currentPlayer, state);
 		}
 		drawCard(currentPlayer, state);
@@ -670,11 +670,12 @@ int adventurerCard(struct gameState *state)
 			z++;
 		}
 	}
-	while (z - 1 >= 0) { 
+	while (z - 1 >= 0) {
 		state->discard[currentPlayer][state->discardCount[currentPlayer]++] = temphand[z - 1]; // discard all cards in play that have been drawn
 		z = z - 1;
 	}
 	return 0;
+
 }
 
 int gardensCard()
@@ -701,7 +702,6 @@ int smithyCard(struct gameState *state, int handPos)
 	//discard card from hand
 	discardCard(handPos, currentPlayer, state, 0);
 	return 0;
-
 }
 
 int cutpurseCard(struct gameState *state, int handPos)
@@ -723,7 +723,7 @@ int cutpurseCard(struct gameState *state, int handPos)
 		{
 			for (j = 0; j < state->handCount[i]; j++)
 			{
-				if (state->hand[i][j] == silver) //BUG copper changed to silver
+				if (state->hand[i][j] == copper)
 				{
 					discardCard(j, i, state, 0);
 					break;
@@ -761,14 +761,14 @@ int sea_hagCard(struct gameState *state)
 
 	for (i = 0; i < state->numPlayers; i++) {
 		if (i == currentPlayer) { //BUG != changed to ==
-			state->discard[i][state->discardCount[i]] = state->deck[i][state->deckCount[i]--];			    
-			state->deckCount[i]--;
+			state->discard[i][state->discardCount[i]] = state->deck[i][state->deckCount[i]--];			    state->deckCount[i]--;
 			state->discardCount[i]++;
-			state->deck[i][state->deckCount[i]--] = curse;
+			state->deck[i][state->deckCount[i]--] = curse;//Top card now a curse
 		}
 	}
 	return 0;
 }
+
 
 int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState *state, int handPos, int *bonus)
 {
@@ -780,7 +780,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
   int nextPlayer = currentPlayer + 1;
 
   int tributeRevealedCards[2] = {-1, -1};
-  int temphand[MAX_HAND];
+  int temphand[MAX_HAND];// moved above the if statement
   if (nextPlayer > (state->numPlayers - 1)){
     nextPlayer = 0;
   }
@@ -790,8 +790,8 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
   switch( card ) 
     {
     case adventurer:
-		adventurerCard(state);
-			
+	  adventurerCard(state);
+      
     case council_room:
       //+4 Cards
       for (i = 0; i < 4; i++)
@@ -870,7 +870,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
       return 0;
 			
     case gardens:
-		gardensCard();
+	  gardensCard();
 			
     case mine:
       j = state->hand[currentPlayer][choice1];  //store card we will trash
@@ -934,7 +934,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
       return 0;
 		
     case smithy:
-		smithyCard(state, handPos);
+	  smithyCard(state, handPos);
 		
     case village:
       //+1 Card
@@ -1245,7 +1245,7 @@ int cardEffect(int card, int choice1, int choice2, int choice3, struct gameState
       return 0;
 		
     case sea_hag:
-		sea_hagCard(state);
+	  sea_hagCard(state);
 		
     case treasure_map:
       //search hand for another treasure_map
