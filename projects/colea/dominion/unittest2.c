@@ -315,7 +315,7 @@ int main()
 	else
 		printf("At least 1 test FAILED- review results\n");
 
-	printf("FINISH TESTING isupdateCoins()\n");
+	printf("FINISH TESTING updateCoins()\n");
 
 	return 0;
 }

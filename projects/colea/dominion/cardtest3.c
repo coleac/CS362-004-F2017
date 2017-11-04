@@ -160,7 +160,7 @@ int main()
 	else
 		printf("FAILED\n");
 
-	//confirm 1 card discarded to own deck by other player
+	//confirm 0 card discarded to own deck by other player
 	printf("TEST: deck count = %d, expected = %d: ", testG.deckCount[1], G.deckCount[1] - newCards + shuffledCards);
 	if (testG.deckCount[1] == G.deckCount[1] - newCards + shuffledCards)
 	{
