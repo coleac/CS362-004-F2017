@@ -87,7 +87,7 @@ int main() {
 		printf("FAILED\n");
 
 	//TEST 2: Make sure cards are Treasure cards
-	printf("TEST 2: Confirm cards are Treasure cards\n");
+	printf("TEST 2: Confirm cards are Treasure cards\n");	
 	if (testG.handCount[thisPlayer] >= 5)
 	{
 		for (i = 5; i < testG.handCount[thisPlayer] - 1; i++)
@@ -195,7 +195,7 @@ int main() {
 	else
 		printf("FAILED\n");
 
-	//TEST 6: No change of state for other player(s)
+	//TEST 2: No change of state for other player(s)
 	printf("TEST 6: No change of state for other player(s): ");
 
 	//no state change for other players

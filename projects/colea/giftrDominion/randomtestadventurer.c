@@ -36,7 +36,7 @@ int checkadventurer(int card, int choice1, int choice2, int choice3, struct game
 		pre.handCount[pre.whoseTurn] = pre.handCount[pre.whoseTurn] + 2; // no discard of played card
 		if (pre.handCount[pre.whoseTurn] == post->handCount[pre.whoseTurn])
 		{
-			//printf("CASE A-TEST 1: 2 Treasure cards drawn by Current Player from deck: handCount = %d, expected = %d: \n", post->handCount[pre.whoseTurn], pre.handCount[pre.whoseTurn]);
+			printf("CASE A-TEST 1: 2 Treasure cards drawn by Current Player from deck: handCount = %d, expected = %d: \n", post->handCount[pre.whoseTurn], pre.handCount[pre.whoseTurn]);
 			//printf("	TEST1a: Correct # of cards drawn PASSED\n");
 
 			//TEST 2: Make sure cards are Treasure cards
@@ -82,14 +82,14 @@ int checkadventurer(int card, int choice1, int choice2, int choice3, struct game
 		pre.handCount[pre.whoseTurn] = pre.handCount[pre.whoseTurn] + 2; //no discard of played card
 		if (pre.handCount[pre.whoseTurn] == post->handCount[pre.whoseTurn])
 		{
-			printf("CASE B-TEST 1: 2 Treasure cards drawn by current player from own deck after discard pile shuffled: handCount = %d, expected = %d: \n", post->handCount[pre.whoseTurn], pre.handCount[pre.whoseTurn]);
-			printf("	TEST1b: 2 cards drawn PASSED\n");
+			//printf("CASE B-TEST 1: 2 Treasure cards drawn by current player from own deck after discard pile shuffled: handCount = %d, expected = %d: \n", post->handCount[pre.whoseTurn], pre.handCount[pre.whoseTurn]);
+			//printf("	TEST1b: 2 cards drawn PASSED\n");
 
 			//TEST 2: Make sure cards are Treasure cards
 			if ((post->hand[pre.whoseTurn][post->handCount[pre.whoseTurn] - 1] == copper || silver || gold) && (post->hand[pre.whoseTurn][post->handCount[pre.whoseTurn] - 2] == copper || silver || gold))
 			{
-				printf("TEST 2: Confirm drawn cards are Treasure cards: \n");
-				printf("	TEST 2b: Cards are Treasure Cards PASSED\n");
+				//printf("TEST 2: Confirm drawn cards are Treasure cards: \n");
+				//printf("	TEST 2b: Cards are Treasure Cards PASSED\n");
 			}
 			else
 			{
@@ -108,8 +108,8 @@ int checkadventurer(int card, int choice1, int choice2, int choice3, struct game
 		pre.deckCount[pre.whoseTurn] = pre.discardCount[pre.whoseTurn] - post->discardCount[pre.whoseTurn] - 2;
 		if (post->deckCount[pre.whoseTurn] == pre.deckCount[pre.whoseTurn])
 		{
-			printf("TEST 3: Cards drawn by Current Player from own deck: deckCount = %d, expected = %d: \n", post->deckCount[pre.whoseTurn], pre.deckCount[pre.whoseTurn]);
-			printf("	TEST3b: Cards drawn from Player's deck PASSED\n");
+			//printf("TEST 3: Cards drawn by Current Player from own deck: deckCount = %d, expected = %d: \n", post->deckCount[pre.whoseTurn], pre.deckCount[pre.whoseTurn]);
+			//printf("	TEST3b: Cards drawn from Player's deck PASSED\n");
 		}
 		else
 		{
@@ -176,7 +176,7 @@ int checkadventurer(int card, int choice1, int choice2, int choice3, struct game
 
 	if (r == 0)
 	{
-		printf("TEST7: RETURN 0 PASSED\n");
+		//printf("TEST7: RETURN 0 PASSED\n");
 	}
 	else
 	{

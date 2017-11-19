@@ -1,4 +1,4 @@
-//cardtest4.c
+//cardtest2.c
 //Resource: cardtest4.c and testUpdateCoins.c provided in CS_362_400_F2017 Files
 
 
@@ -12,24 +12,20 @@
 
 
 
-#define TESTCARD "sea_hag"
+#define TESTCARD "smithy"
 
 int main() {
 
 	int passedCounter = 0;
 	int newCards = 0;
 	int extraCoins = 0;
-	int discarded = 0; //unlike other cards-sea_hag does not discard
-	int deckDiscarded = 0;
-	int otherDiscarded = 0;
-	int otherDeckDiscarded = 1;
+	int discarded = 1;
 	int shuffledCards = 0;
 
 	int handpos = 0, choice1 = 0, choice2 = 0, choice3 = 0, bonus = 0;
 	int seed = 1000;
 	int numPlayers = 2;
 	int thisPlayer = 0;
-	int otherPlayer = 1;
 	struct gameState G, testG;
 	int k[10] = { adventurer, embargo, village, minion, mine, cutpurse,
 		sea_hag, tribute, smithy, council_room };
@@ -38,26 +34,28 @@ int main() {
 	initializeGame(numPlayers, k, seed, &G);
 
 	//set other players hand
-	G.handCount[otherPlayer] = 5;
-	G.deckCount[otherPlayer] = 5;
+	G.handCount[1] = 5;
+	G.deckCount[1] = 5;
 
-	G.hand[otherPlayer][0] = copper;
-	G.hand[otherPlayer][1] = copper;
-	G.hand[otherPlayer][2] = copper;
-	G.hand[otherPlayer][3] = estate;
-	G.hand[otherPlayer][4] = estate;
+	G.hand[1][0] = copper;
+	G.hand[1][1] = copper;
+	G.hand[1][2] = copper;
+	G.hand[1][3] = estate;
+	G.hand[1][4] = estate;
 
 	printf("----------------- Testing Card: %s ----------------\n", TESTCARD);
 
-	//TEST 1: No change of state for current player 
-	printf("TEST 1: No change of state for current player\n");
+	//TEST 1: Current Player draws exactly cards from own deck 
+	printf("TEST 1: Current Player draws exactly 3 cards from deck\n");
 
 	// copy the game state to a test case
 	memcpy(&testG, &G, sizeof(struct gameState));
 
-	cardEffect(sea_hag, choice1, choice2, choice3, &testG, handpos, &bonus);
+	cardEffect(smithy, choice1, choice2, choice3, &testG, handpos, &bonus);
 
-	//confirm 0 cards drawn to hand by current player
+	//confirm 3 cards drawn by current player
+	newCards = 3;
+
 	printf("TEST: hand count = %d, expected = %d: ", testG.handCount[thisPlayer], G.handCount[thisPlayer] + newCards - discarded);
 	if (testG.handCount[thisPlayer] == G.handCount[thisPlayer] + newCards - discarded)
 	{
@@ -67,8 +65,7 @@ int main() {
 	else
 		printf("FAILED\n");
 
-	
-	//confirm 0 cards drawn from deck by current player
+	//cards from own pile (include shuffled cards if needed)
 	printf("TEST: deck count = %d, expected = %d: ", testG.deckCount[thisPlayer], G.deckCount[thisPlayer] - newCards + shuffledCards);
 	if (testG.deckCount[thisPlayer] == G.deckCount[thisPlayer] - newCards + shuffledCards)
 	{
@@ -78,26 +75,7 @@ int main() {
 	else
 		printf("FAILED\n");
 
-	//confirm 0 cards discarded from deck by current player
-	printf("TEST: discard count = %d, expected = %d: ", testG.discardCount[thisPlayer], G.discardCount[thisPlayer] + deckDiscarded);
-	if (testG.discardCount[thisPlayer] == G.discardCount[thisPlayer] + deckDiscarded)
-	{
-		printf("PASSED\n");
-		passedCounter++;
-	}
-	else
-		printf("FAILED\n");
-
-	printf("TEST: card = %d, expected != %d: ", testG.deck[thisPlayer][4], curse);
-	if (testG.deck[thisPlayer][4] != curse)
-	{
-		printf("PASSED\n");
-		passedCounter++;
-	}
-	else
-		printf("FAILED\n");
-
-	//no change to coin value
+	//Of 8 cards, at least 5 cards should be copper (current seed= 1000)
 	printf("TEST: coins = %d, expected = %d: ", testG.coins, G.coins + extraCoins);
 	if (testG.coins == G.coins + extraCoins)
 	{
@@ -107,39 +85,11 @@ int main() {
 	else
 		printf("FAILED\n");
 
-	//TEST 2: Change of state for other player(s)
-	printf("TEST 2: Change of state for other player(s)\n");
+	//TEST 2: No change of state for other player(s)
+	printf("TEST 2: No change of state for other player(s): ");
 
-	printf("TEST: hand count = %d, expected = %d: ", testG.handCount[otherPlayer], G.handCount[otherPlayer] + newCards - otherDiscarded);
-	if (testG.handCount[otherPlayer] == G.handCount[otherPlayer] + newCards - otherDiscarded)
-	{
-		printf("PASSED\n");
-		passedCounter++;
-	}
-	else
-		printf("FAILED\n");
-
-	
-	printf("TEST: deck count = %d, expected = %d: ", testG.deckCount[otherPlayer], G.deckCount[otherPlayer] - newCards + shuffledCards);
-	if (testG.deckCount[otherPlayer] == G.deckCount[otherPlayer] - newCards + shuffledCards)
-	{
-		printf("PASSED\n");
-		passedCounter++;
-	}
-	else
-		printf("FAILED\n");
-
-	printf("TEST: discard count = %d, expected = %d: ", testG.discardCount[otherPlayer], G.discardCount[otherPlayer] + otherDeckDiscarded);
-	if (testG.discardCount[otherPlayer] == G.discardCount[otherPlayer] + otherDeckDiscarded)
-	{
-		printf("PASSED\n");
-		passedCounter++;
-	}
-	else
-		printf("FAILED\n");
-
-	printf("TEST: card = %d, expected = %d: ", testG.deck[otherPlayer][4], curse); //4 is estate, 0 is curse
-	if (testG.deck[otherPlayer][4] == curse)
+	//no state change for other players
+	if (testG.handCount[1] == G.handCount[1] && testG.deckCount[1] == G.deckCount[1])
 	{
 		printf("PASSED\n");
 		passedCounter++;
@@ -165,19 +115,19 @@ int main() {
 
 
 
-	if (passedCounter == 10)
+	if (passedCounter == 5)
 		printf("FINAL RESULTS: All tests PASSED!\n");
 	else
 		printf("FINAL RESULTS: At least 1 test FAILED- review results\n");
 
 	printf("FINISH TESTING %s\n", TESTCARD);
 
+
 	return 0;
 
 }
-
 /*
-int sea_hagCard(struct gameState *state)
+int smithyCard(struct gameState *state, int handPos)
 {
 	int i;
 	int currentPlayer = whoseTurn(state);
@@ -187,14 +137,13 @@ int sea_hagCard(struct gameState *state)
 		nextPlayer = 0;
 	}
 
-	for (i = 0; i < state->numPlayers; i++) {
-		if (i == currentPlayer) { //BUG != changed to ==
-			state->discard[i][state->discardCount[i]] = state->deck[i][state->deckCount[i]--];			    
-			state->deckCount[i]--;
-			state->discardCount[i]++;
-			state->deck[i][state->deckCount[i]--] = curse;//Top card now a curse
-		}
+	//+3 Cards
+	for (i = 0; i < 2; i++) //BUG 3 changed to 2
+	{
+		drawCard(currentPlayer, state);
 	}
+
+	//discard card from hand
+	discardCard(handPos, currentPlayer, state, 0);
 	return 0;
-}
-*/
+}*/

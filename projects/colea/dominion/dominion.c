@@ -656,7 +656,7 @@ int adventurerCard(struct gameState *state)
 		nextPlayer = 0;
 	}
 
-	while (drawntreasure > 2) { //BUG < changed to >
+	while (drawntreasure < 2) { //BUG < changed to > -DEBUGGED AND FIXED
 		if (state->deckCount[currentPlayer] <1) {//if the deck is empty we need to shuffle discard and add to deck
 			shuffle(currentPlayer, state);
 		}

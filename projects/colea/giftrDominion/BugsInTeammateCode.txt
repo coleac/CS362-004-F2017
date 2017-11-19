@@ -1,0 +1,63 @@
+Bug-Reports
+
+Adventurer
+	Failed to find bug.
+I was unable to find the introduced bug with either my unit test or my random testing. Code review showed the bug:
+	Line 1225 if (cardDrawn == copper || cardDrawn == silver) //does not check for cardDrawn == gold
+
+The result is that Treasure cards that are gold are not counted as drawnTreasure and would have been discarded. In my unit test, I set up the Draw pile only for copper, and the random test was only checking what cards the player pulled (in this case copper and silver) so I obviously wouldn’t have caught it with that either.
+
+
+Smithy
+	Bug1: 4 cards drawn instead of 3
+		line 1204  for (i = 0; i < 4; i++) 	//4 should be 3
+	Bug2: player earns 2 coins
+		line 1208 state->coins = state->coins + 2; //invalid code for functionality
+	Bug3*: discardCount not updated by 1
+		line 1206 discardCard(handPos, currentPlayer, state, 0); //technically a discardCard bug not updating discardCount
+
+Per the unit test results, the handCount is 1 higher and the deckCount is 1 lower than expected. The number of coins should not change, but has gone up by 2. These same deviations were also found in each of the 2000 random test cases. The handCount and deckCount differences suggests an extra card being drawn and a review of the code confirms drawCard is being called once too often by the for loop. The coin count is consistently 2 too high and since the Smithy card doesn’t earn any coins directly, this suggests there must be a coding error such as a call to updateCoin(). Code review shows a direct gameState update on line 1208 coded. 
+
+*Additionally, the random tests uncover the discardCard() function bug resulting in the discardCount not increasing. 
+
+
+Cutpurse
+	Bug4*: discardCount not updated by 1
+		line 980 discardCard(j, i, state, 0); //technically a discardCard bug not updating discardCount
+
+*All random tests showed discardCount 1 less for Current Player and Other Player(s) with Copper card. Unit tests did not test for discardCount. 
+
+Sea_hag
+	Bug5: deckCount decreased by 3		
+	Bug6: top card of other player’s deck not a curse card
+		line 1048 state->discard[i][state->discardCount[i]] = state->deck[i][state->deckCount[i]--];			    state->deckCount[i]--; (//<-should be deleted)
+		line 1050 state->deck[i][state->deckCount[i]--] = curse; //-- should be - 1
+
+With the top card of the deck being discarded and replaced with a Curse card, the deckCount of the Other Player should not change, but the unit test showed a decrease of 3 cards.  Another test case also revealed that the top card of the Other Player’s deck was not a Curse card as it should be. Two bugs stem from same error: state->deckCount[i] - -
+The first and third uses within brackets need to be: [state->deckCount[i]-1] and the second use needs to be deleted as the deckCount isn’t reduced, the card is replaced.
+
+isGameOver()
+	No Bugs found
+
+updateCoins()
+	No Bugs found
+
+scoreFor()
+	Bug7: score (deck) lower than expected
+		Line 447 for (i = 0; i < state->discardCount[player]; i++) //should be deckCount
+	Bug8*: score lower than expected
+		Lines 432, 443, and 454 if (state->hand[player][i] == gardens) { score = score + (fullDeckCount(player, 0, state) / 10); }; //technically a fullDeckCount bug impacting scoreFor
+
+A unit test case with only Kingdom cards in the Hand, Deck, and Discard had a negative score returned – this shouldn’t happen in a game without Curse cards. Since the code uses arrays, this suggests it may be getting garbage values or old values. Code review confirms an incorrect array being used on line 447. The discard deck has 7 more cards than the deck. Those array values are each -1, accounting for a -7 difference, not as large as the difference I am seeing: the Mixed cards test case had a difference of 15. The Curse card only unit test case had a difference of exactly -7, which leads us to the second bug impacting the score...
+*The final score count failure is also partly due to the bug in the fullDeckCount() function, called by the Gardens card. As is, it is only counting the number of Curse cards (enum 0) in the Hand, Deck, and Discard, not the total number of cards as it should be. (See fullDeckCount() below.)
+
+
+fullDeckCount()
+	Bug9: deck count lower than expected
+		Line 327 int fullDeckCount(int player, int card, struct gameState *state) {	 //shouldn’t have int card parameter or should accept NULL
+
+I discussed the same bug and code issue in Assignment 3 when I found it in my dominion.c code:
+“Function has 3 parameters: player, card and state. This function is only called by scoreFor() which uses it solely to calculate the total number of cards in the deck for use by the Gardens card. Since it has the card parameter, it is being passed a specific card and therefore returning the count of a specific card a player has in their combined Hand, Discard and Deck. 
+NULL defaults to 0 which is the value for Curse, so the function returns the number of Curse cards for that value [the unit test for this failed in terms of testing for the total number of cards in the deck with a NULL parameter.] And 0 of course returns the same (this is what was found in the code review for scoreFor() as to one of the reasons the score is low and incorrect.)
+The function either needs to have the parameter removed, or if it is kept for further updates of the game (the Duke card gives 1 Victory point for every Duchy so this functionality would be useful for that,) it needs to be re-written.”
+
